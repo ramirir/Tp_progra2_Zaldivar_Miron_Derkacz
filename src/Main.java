@@ -12,6 +12,24 @@ public class Main {
         Cola colaLinux = new Cola();
         Scanner teclado = new Scanner(System.in);
 
+        //Usuarios ya creados
+
+        Clase_Perfil user1 = new Clase_Perfil("juan@mail.com", "Juan Perez", "Desarrollador Java");
+        Clase_Perfil user2 = new Clase_Perfil("ana@mail.com", "Ana Gomez", "Analista de Sistemas");
+        Clase_Perfil user3 = new Clase_Perfil("lucas@mail.com", "Lucas Diaz", "Administrador Linux");
+
+        plataforma.insertar(user1.getId(), user1);
+        plataforma.insertar(user2.getId(), user2);
+        plataforma.insertar(user3.getId(), user3);
+
+        //Usuarios ya encolados
+
+
+        colaJava.encolar(new Postulacion(user1.getId(), "Desarrollador de Java Backend"));
+        colaSistemas.encolar(new Postulacion(user2.getId(), "Analista de Sistemas / Funcional"));
+
+
+
         int opcionPrincipal;
 
         do {
