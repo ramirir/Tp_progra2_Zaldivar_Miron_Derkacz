@@ -14,9 +14,9 @@ public class Main {
 
         //Usuarios ya creados
 
-        Clase_Perfil user1 = new Clase_Perfil("juan@mail.com", "Juan Perez", "Desarrollador Java");
-        Clase_Perfil user2 = new Clase_Perfil("ana@mail.com", "Ana Gomez", "Analista de Sistemas");
-        Clase_Perfil user3 = new Clase_Perfil("lucas@mail.com", "Lucas Diaz", "Administrador Linux");
+        Clase_Perfil user1 = new Clase_Perfil("rami@mail.com", "Ramiro", "Desarrollador Java");
+        Clase_Perfil user2 = new Clase_Perfil("nacho@mail.com", "Ignacio", "Analista de Sistemas");
+        Clase_Perfil user3 = new Clase_Perfil("facu@mail.com", "Facundo", "Administrador Linux");
 
         plataforma.insertar(user1.getId(), user1);
         plataforma.insertar(user2.getId(), user2);
@@ -36,7 +36,7 @@ public class Main {
             System.out.println("\n-----------------------------------------------");
             System.out.println("          PLATAFORMA LABORAL - MENÚ PRINCIPAL    ");
             System.out.println("-------------------------------------------------");
-            System.out.println("1- Altas");
+            System.out.println("1- Registro/Inicio de sesion");
             System.out.println("2- Bajas");
             System.out.println("3- Consultas y Reportes del Sistema");
             System.out.println("4- Salir");
@@ -47,7 +47,7 @@ public class Main {
 
             if (opcionPrincipal == 1) {
                 int opcionAltas;
-                System.out.println("\n SUBMENU 1- ALTAS");
+                System.out.println("\n SUBMENU -USUARIOS");
                 System.out.println(" 1- Registrar usuario");
                 System.out.println(" 2- Iniciar sesion de usuario");
                 System.out.print("Seleccione una opcion (1 o 2): ");
@@ -71,6 +71,7 @@ public class Main {
                     String loginId = teclado.nextLine();
 
                     Clase_Perfil UsuarioLogueado = plataforma.recuperar(loginId);
+
                     if (UsuarioLogueado != null) {
                         System.out.println("-> ¡Bienvenido " + UsuarioLogueado.getNombre() + "!");   // Usuario ingresa correctamente
                         menuUsuario(UsuarioLogueado, colaJava, colaSistemas, colaLinux, teclado);  // Llamamos a la funcion del menu usuario
@@ -101,7 +102,7 @@ public class Main {
             System.out.println("    1- Ver mis Datos del Perfil");
             System.out.println("    2- Modificar Carrera / Profesión");
             System.out.println("    3- Postularse a una Oferta de Empleo");
-            System.out.println("    4- Deshacer última modificación (Pila)");
+            System.out.println("    4- Deshacer última modificación");
             System.out.println("    5- Cerrar Sesión");
             System.out.print("    Elija una opción de su cuenta: ");
             opcionUsuario = teclado.nextInt();
@@ -135,15 +136,15 @@ public class Main {
                 if (puestoElegido == 1) {
                     Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), nombrePuesto);
                     colaJava.encolar(nuevaSolicitud);
-                    System.out.println(" ¡Postulación exitosa! Entraste a la cola de Desarrollador de Java.");
+                    System.out.println(" ¡Postulación exitosa a la oferta de Desarrollador de Java.");
                 } else if (puestoElegido == 2) {
                     Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), nombrePuesto);
                     colaSistemas.encolar(nuevaSolicitud);
-                    System.out.println(" ¡Postulación exitosa! Entraste a la cola de Analista de Sistemas.");
+                    System.out.println(" Postulación exitosa a la oferta de Analista de Sistemas.");
                 } else if (puestoElegido == 3) {
                     Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), nombrePuesto);
                     colaLinux.encolar(nuevaSolicitud);
-                    System.out.println(" ¡Postulación exitosa! Entraste a la cola de Administrador de Servidores de Linux.");
+                    System.out.println(" ¡Postulación exitosa a la oferta de Servidores de Linux.");
                 } else {
                     System.out.println(" Opción de puesto inválida.");
                 }
@@ -152,7 +153,7 @@ public class Main {
             } else if (opcionUsuario == 4) {
                 System.out.println("    Carrera actual: " + usuario.getProfesion());
                 if (usuario.deshacerUltimoCambio()) {
-                    System.out.println("  ¡Cambio deshecho! Carrera restaurada.");
+                    System.out.println("  ¡Cambio deshecho!.");
                     System.out.println("    Carrera actual: " + usuario.getProfesion());
                 } else {
                     System.out.println("  No hay modificaciones guardadas en el historial.");
@@ -178,7 +179,7 @@ public class Main {
         Clase_Perfil pBaja = plataforma.recuperar(bajaId);
 
         if (pBaja != null) {
-            System.out.println("\n ¡Usuario encontrado!");
+            System.out.println("\n Usuario encontrado!");
             System.out.println("  Nombre: " + pBaja.getNombre());
             System.out.println("  Carrera: " + pBaja.getProfesion());
             System.out.print("\n  ¿Está seguro de que desea eliminar este perfil permanentemente? (S/N): ");
@@ -186,7 +187,7 @@ public class Main {
 
             if (confirmacion.equalsIgnoreCase("S")) {
                 plataforma.eliminar(bajaId); // Desenlaza el nodo
-                System.out.println("  ¡Usuario \"" + pBaja.getNombre() + "\" dado de baja correctamente!");
+                System.out.println("  Usuario \"" + pBaja.getNombre() + "\" dado de baja correctamente!");
             } else {
                 System.out.println(" Operación cancelada. El usuario no fue eliminado.");
             }
@@ -202,8 +203,8 @@ public class Main {
         int opcionConsultas;
 
         System.out.println("\n  [ SUBMENÚ 3 - CONSULTAS Y REPORTES ]");
-        System.out.println("  1- Buscar Perfil (Identificación Inmediata)");
-        System.out.println("  2- Procesar Siguiente Postulante en la Cola (Orden de llegada)");
+        System.out.println("  1- Buscar Perfil ");
+        System.out.println("  2- Ver postulantes en la oferta de trabajo (Orden de llegada)");
         System.out.print("  Seleccione una opción (1 o 2): ");
         opcionConsultas = teclado.nextInt();
         teclado.nextLine(); // Limpiar el buffer
@@ -237,7 +238,8 @@ public class Main {
             else if (seleccion == 2) colaElegida = colaSistemas;
             else if (seleccion == 3) colaElegida = colaLinux;
             if (!colaElegida.esta_vacia()) {
-                // 1. Capturamos la postulación del frente
+
+                //  Capturamos la postulación del frente
                 Postulacion solicitudActual = colaElegida.ver_primero();
 
 
@@ -249,15 +251,16 @@ public class Main {
 
 
                 if (pPrimero != null) {
-                    System.out.println("\n  [ Evaluando Siguiente Solicitud por Orden de Llegada ]");
+                    System.out.println("\n  ---Evaluando Siguiente Solicitud por Orden de Llegada---");
                     System.out.println("  PUESTO APLICADO:         " + puestoPostulado.toUpperCase());
                     System.out.println("  ------------------------------------------------------------");
                     System.out.println("  Postulante a entrevista: " + pPrimero.getNombre());
                     System.out.println("  Especialidad/Carrera:    " + pPrimero.getProfesion());
                     System.out.println("  Email de contacto:       " + emailPostulante);
                 } else {
+
                     // Si el perfil dio null es porque el usuario fue eliminado del diccionario
-                    System.out.println("\n  [Alerta]");
+                    System.out.println("\n  -Alerta-");
                     System.out.println("  La postulación para el puesto " + puestoPostulado + "' pertenece al email (" + emailPostulante + "), pero el usuario ya no existe en el sistema (fue dado de baja).");
                 }
 
