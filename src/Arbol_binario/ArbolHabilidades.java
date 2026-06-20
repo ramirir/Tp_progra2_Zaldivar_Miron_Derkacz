@@ -1,4 +1,4 @@
-package arbol;
+package Arbol_Binario;
 
 public class ArbolHabilidades {
 

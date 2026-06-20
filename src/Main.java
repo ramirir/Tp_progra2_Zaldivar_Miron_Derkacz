@@ -3,10 +3,12 @@ import Diccionario.Diccionario;
 import clases.Clase_Perfil;
 import Cola.Cola;
 import clases.Postulacion;
+import Grafo.GrafoLista;
 
 public class Main {
     public static void main(String[] args) {
         Diccionario plataforma = new Diccionario();
+        GrafoLista redContactos= new GrafoLista(plataforma);
         Cola colaJava = new Cola();
         Cola colaSistemas = new Cola();
         Cola colaLinux = new Cola();
@@ -22,8 +24,11 @@ public class Main {
         plataforma.insertar(user2.getId(), user2);
         plataforma.insertar(user3.getId(), user3);
 
-        //Usuarios ya encolados
+        //Establecemos conexiones para asi probar funcionalidades
+        redContactos.conectar(user1.getId(),user2.getId());
+        redContactos.conectar(user2.getId(), user3.getId());
 
+        //Usuarios ya encolados
 
         colaJava.encolar(new Postulacion(user1.getId(), "Desarrollador de Java Backend"));
         colaSistemas.encolar(new Postulacion(user2.getId(), "Analista de Sistemas / Funcional"));
@@ -73,7 +78,7 @@ public class Main {
                     Clase_Perfil UsuarioLogueado = plataforma.recuperar(loginId);
                     if (UsuarioLogueado != null) {
                         System.out.println("-> ¡Bienvenido " + UsuarioLogueado.getNombre() + "!");   // Usuario ingresa correctamente
-                        menuUsuario(UsuarioLogueado, colaJava, colaSistemas, colaLinux, teclado);  // Llamamos a la funcion del menu usuario
+                        menuUsuario(UsuarioLogueado,plataforma, redContactos , colaJava, colaSistemas, colaLinux, teclado);  // Llamamos a la funcion del menu usuario
                     } else {
                         System.out.println("-> Error: El email no coincide con ningún usuario registrado.");
                     }
@@ -92,7 +97,7 @@ public class Main {
     //    Menu de usuario
     //-------------------------
 
-    public static void menuUsuario(Clase_Perfil usuario, Cola colaJava, Cola colaSistemas, Cola colaLinux, Scanner teclado) {
+    public static void menuUsuario(Clase_Perfil usuario, Diccionario plataforma, GrafoLista redContactos, Cola colaJava, Cola colaSistemas, Cola colaLinux, Scanner teclado) {
         int opcionUsuario;
         do {
             System.out.println("\n    -------------------------------------------------");
@@ -102,7 +107,10 @@ public class Main {
             System.out.println("    2- Modificar Carrera / Profesión");
             System.out.println("    3- Postularse a una Oferta de Empleo");
             System.out.println("    4- Deshacer última modificación (Pila)");
-            System.out.println("    5- Cerrar Sesión");
+            System.out.println("    5- Ver mis contactos");
+            System.out.println("    6- Ver contactos recomendados");
+            System.out.println("    7- Calcular grado separacion");
+            System.out.println("    8- Cerrar Sesión");
             System.out.print("    Elija una opción de su cuenta: ");
             opcionUsuario = teclado.nextInt();
             teclado.nextLine();
@@ -159,12 +167,17 @@ public class Main {
                 }
 
             } else if (opcionUsuario == 5) {
-                System.out.println("    Cerrando sesión de " + usuario.getNombre() + "...");
-            } else {
-                System.out.println("    Opción inválida dentro del usuario.");
+                redContactos.mostrarContactos(usuario.getId());
+            } else if (opcionUsuario == 6) {
+                mostrarContactosRecomendados(usuario, redContactos, teclado);
+            } else if (opcionUsuario== 7) {
+                calcularGradoSeparacion(usuario,redContactos,teclado);
+            } else if (opcionUsuario== 8 ) {
+                System.out.println("  Cerrando sesion de" + usuario.getNombre() +"..." );
+            }else {
+                System.out.println("  Opcion Invalida");
             }
-
-        } while (opcionUsuario != 5); //  Cerrar Sesión
+        } while (opcionUsuario != 8); //  Cerrar Sesión
     }
     // -----------------------------------------
     //              Menu de bajas
@@ -268,6 +281,30 @@ public class Main {
             } else {
                 System.out.println(" No hay solicitudes pendientes en la cola de postulaciones.");
             }
+
+        }
+    }
+
+
+    public static void mostrarContactosRecomendados(Clase_Perfil usuario, GrafoLista redContactos, Scanner teclado) {
+
+        System.out.println("\n    [ CONTACTOS RECOMENDADOS ]");
+
+        redContactos.sugerirContactos(usuario.getId());
+    }
+
+    public static void calcularGradoSeparacion(Clase_Perfil usuario, GrafoLista redContactos, Scanner teclado) {
+        System.out.println("\n    [ GRADO DE SEPARACIÓN ]");
+        System.out.print("    Ingrese el Email de destino a consultar (ej: lucas@mail.com): ");
+        String emailDestino = teclado.nextLine();
+
+        int grado = redContactos.calcularGradoSeparacion(usuario.getId(), emailDestino);
+        if (grado == -1) {
+            System.out.println("    No existe un camino o vínculo que te conecte con ese usuario.");
+        } else if (grado == 0) {
+            System.out.println("    Ese eres tú mismo.");
+        } else {
+            System.out.println("    Grado de separación: " + grado + " saltos.");
         }
     }
 }

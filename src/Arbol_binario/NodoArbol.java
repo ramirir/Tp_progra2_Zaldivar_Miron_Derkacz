@@ -1,4 +1,4 @@
-package arbol;
+package Arbol_binario;
 
 public class NodoArbol {
 

@@ -2,7 +2,7 @@ package clases;
 
 public class Postulacion {
 
-    private String emailUsuario;
+    private final String emailUsuario;
     private String puestoTrabajo;
 
 

@@ -1,303 +1,156 @@
-package grafo2;
+package Grafo;
 
-public class GrafoLista<T> implements Igrafo<T> {
+import Diccionario.Diccionario;
+import clases.Nodo_Diccionario;
 
-    private NodoVertice<T> primero;
-    private boolean dirigido;
+public class GrafoLista {
+    private Diccionario usuarios;
 
-    public GrafoLista(boolean dirigido) {
-        this.primero = null;
-        this.dirigido = dirigido;
+    public GrafoLista(Diccionario usuarios) {
+        this.usuarios = usuarios;
     }
 
-    @Override
-    public void agregarUsuario(T email) {
-        if (existeUsuario(email)) {
-            return;
+    public void conectar(String email1, String email2) {         //Crea vinculo entre personas
+        Nodo_Diccionario n1 = usuarios.obtenerNodo(email1);
+        Nodo_Diccionario n2 = usuarios.obtenerNodo(email2);
+
+        if (n1 != null && n2 != null) {
+            agregarAdyacente(n1, email2);
+            agregarAdyacente(n2, email1);
         }
-        NodoVertice<T> nuevo = new NodoVertice<>(email);
-        if (primero == null) {
-            primero = nuevo;
+    }
+
+    private void agregarAdyacente(Nodo_Diccionario origen, String idDestino) {
+        Nodo_Adyacente nuevo = new Nodo_Adyacente(idDestino);
+        if (origen.getAdyacentes() == null) {
+            origen.setAdyacentes(nuevo);
         } else {
-            NodoVertice<T> aux = primero;
-            while (aux.siguiente != null) {
-                aux = aux.siguiente;
+            Nodo_Adyacente actual = origen.getAdyacentes();
+            while (actual.getSiguiente() != null) {
+                if (actual.getIdDestino().equals(idDestino)) return;    //Evita duplicados
+                actual = actual.getSiguiente();
             }
-            aux.siguiente = nuevo;
-        }
-    }
-
-    @Override
-    public boolean existeUsuario(T email) {
-        return buscarNodo(email) != null;
-    }
-
-    private NodoVertice<T> buscarNodo(T email) {
-        NodoVertice<T> aux = primero;
-        while (aux != null) {
-            if (aux.dato.equals(email)) {
-                return aux;
-            }
-            aux = aux.siguiente;
-        }
-        return null;
-    }
-
-    @Override
-    public void crearConexion(T email1, T email2) {
-        agregarUsuario(email1);
-        agregarUsuario(email2);
-        conectar(email1, email2);
-        if (!dirigido) {
-            conectar(email2, email1);
-        }
-    }
-
-    private void conectar(T origen, T destino) {
-        NodoVertice<T> nodoOrigen = buscarNodo(origen);
-        if (nodoOrigen == null || sonContactos(origen, destino)) {
-            return;
-        }
-        NodoAdyacente<T> nuevo = new NodoAdyacente<>(destino);
-        if (nodoOrigen.adyacentes == null) {
-            nodoOrigen.adyacentes = nuevo;
-        } else {
-            NodoAdyacente<T> aux = nodoOrigen.adyacentes;
-            while (aux.siguiente != null) {
-                aux = aux.siguiente;
-            }
-            aux.siguiente = nuevo;
-        }
-    }
-
-    @Override
-    public boolean sonContactos(T email1, T email2) {
-        NodoVertice<T> nodo = buscarNodo(email1);
-        if (nodo == null) {
-            return false;
-        }
-        NodoAdyacente<T> aux = nodo.adyacentes;
-        while (aux != null) {
-            if (aux.dato.equals(email2)) {
-                return true;
-            }
-            aux = aux.siguiente;
-        }
-        return false;
-    }
-
-    @Override
-    public void eliminarConexion(T email1, T email2) {
-        desconectar(email1, email2);
-        if (!dirigido) {
-            desconectar(email2, email1);
-        }
-    }
-
-    private void desconectar(T origen, T destino) {
-        NodoVertice<T> nodo = buscarNodo(origen);
-        if (nodo == null || nodo.adyacentes == null) {
-            return;
-        }
-        NodoAdyacente<T> actual = nodo.adyacentes;
-        NodoAdyacente<T> anterior = null;
-        while (actual != null) {
-            if (actual.dato.equals(destino)) {
-                if (anterior == null) {
-                    nodo.adyacentes = actual.siguiente;
-                } else {
-                    anterior.siguiente = actual.siguiente;
-                }
-                return;
-            }
-            anterior = actual;
-            actual = actual.siguiente;
-        }
-    }
-
-    @Override
-    public void eliminarUsuario(T email) {
-        if (primero == null) {
-            return;
-        }
-        NodoVertice<T> actual = primero;
-        NodoVertice<T> anterior = null;
-        while (actual != null) {
-            if (actual.dato.equals(email)) {
-                if (anterior == null) {
-                    primero = actual.siguiente;
-                } else {
-                    anterior.siguiente = actual.siguiente;
-                }
-                eliminarReferencias(email);
-                return;
-            }
-            anterior = actual;
-            actual = actual.siguiente;
-        }
-    }
-
-    private void eliminarReferencias(T email) {
-        NodoVertice<T> aux = primero;
-        while (aux != null) {
-            desconectar(aux.dato, email);
-            aux = aux.siguiente;
-        }
-    }
-
-    @Override
-    public void mostrarRed() {
-        NodoVertice<T> aux = primero;
-        while (aux != null) {
-            System.out.print("Usuario " + aux.dato + " conectado con: ");
-            NodoAdyacente<T> ady = aux.adyacentes;
-            while (ady != null) {
-                System.out.print(ady.dato + " | ");
-                ady = ady.siguiente;
-            }
-            System.out.println();
-            aux = aux.siguiente;
-        }
-    }
-
-    private void limpiarVisitados() {
-        NodoVertice<T> aux = primero;
-        while (aux != null) {
-            aux.visitado = false;
-            aux = aux.siguiente;
-        }
-    }
-
-    @Override
-    public void recorridoDFS(T inicio) {
-        limpiarVisitados();
-        NodoVertice<T> nodoInicio = buscarNodo(inicio);
-        if (nodoInicio == null) return;
-        System.out.println("DFS:");
-        dfsRecursivo(nodoInicio);
-        System.out.println();
-    }
-
-    private void dfsRecursivo(NodoVertice<T> vertice) {
-        vertice.visitado = true;
-        System.out.print(vertice.dato + " ");
-        NodoAdyacente<T> ady = vertice.adyacentes;
-        while (ady != null) {
-            NodoVertice<T> vecino = buscarNodo(ady.dato);
-            if (vecino != null && !vecino.visitado) {
-                dfsRecursivo(vecino);
-            }
-            ady = ady.siguiente;
-        }
-    }
-
-    @Override
-    public void recorridoBFS(T inicio) {
-        limpiarVisitados();
-        NodoVertice<T> nodoInicio = buscarNodo(inicio);
-        if (nodoInicio == null) return;
-
-        ColaPropia<NodoVertice<T>> cola = new ColaPropia<>();
-        nodoInicio.visitado = true;
-        cola.encolar(nodoInicio);
-
-        System.out.println("BFS:");
-        while (!cola.estaVacia()) {
-            NodoVertice<T> actual = cola.desencolar();
-            System.out.print(actual.dato + " ");
-            NodoAdyacente<T> ady = actual.adyacentes;
-            while (ady != null) {
-                NodoVertice<T> vecino = buscarNodo(ady.dato);
-                if (vecino != null && !vecino.visitado) {
-                    vecino.visitado = true;
-                    cola.encolar(vecino);
-                }
-                ady = ady.siguiente;
+            if (!actual.getIdDestino().equals(idDestino)) {
+                actual.setSiguiente(nuevo);
             }
         }
-        System.out.println();
     }
 
-    @Override
-    public int calcularGradoSeparacion(T origen, T destino) {
+    public int calcularGradoSeparacion(String origen, String destino) {
         if (origen.equals(destino)) return 0;
-        limpiarVisitados(); 
-        NodoVertice<T> n1 = buscarNodo(origen);
-        NodoVertice<T> n2 = buscarNodo(destino);
-        if (n1 == null || n2 == null) return -1;
+        usuarios.limpiarVisitados();
 
-        ColaPropia<NodoVertice<T>> c1 = new ColaPropia<>();
-        ColaPropia<Integer> c2 = new ColaPropia<>();
+        Nodo_Diccionario nodoOrigen = usuarios.obtenerNodo(origen);
+        if (nodoOrigen == null) return -1;
 
-        n1.visitado = true;
-        c1.encolar(n1);
-        c2.encolar(0); 
-        int res = -1;
+        ColaPropia cola = new ColaPropia(); // <--- Usando tu nombre
+        nodoOrigen.setVisitado(true);
+        cola.encolar(nodoOrigen, 0);
 
-        while (c1.estaVacia() == false) {
-            NodoVertice<T> act = c1.desencolar();
-            int dist = c2.desencolar();
-            if (act.dato.equals(destino)) {
-                res = dist;
-                break;
+        while (!cola.estaVacia()) {
+            NodoCola actual = cola.desencolar(); // <--- Usando tu nombre
+
+            if (actual.nodo.getClave().equals(destino)) {
+                return actual.distancia;
             }
-            NodoAdyacente<T> ady = act.adyacentes;
+
+            Nodo_Adyacente ady = actual.nodo.getAdyacentes();
             while (ady != null) {
-                NodoVertice<T> v = buscarNodo(ady.dato);
-                if (v != null && v.visitado == false) {
-                    v.visitado = true;
-                    c1.encolar(v);
-                    c2.encolar(dist + 1);
+                Nodo_Diccionario vecino = usuarios.obtenerNodo(ady.getIdDestino());
+                if (vecino != null && !vecino.isVisitado()) {
+                    vecino.setVisitado(true);
+                    cola.encolar(vecino, actual.distancia + 1);
                 }
-                ady = ady.siguiente;
+                ady = ady.getSiguiente();
             }
         }
-        return res;
+        return -1;
     }
 
-    @Override
-    public void sugerirContactos(T usuario) {
-        NodoVertice<T> u = buscarNodo(usuario);
-        if (u == null) {
-            System.out.println("el usuario no esta en la red");
+    public void sugerirContactos(String email) {
+        Nodo_Diccionario origen = usuarios.obtenerNodo(email);
+        if (origen == null) return;
+
+        usuarios.limpiarVisitados();
+        origen.setVisitado(true);
+
+        Nodo_Adyacente ady = origen.getAdyacentes();
+        while (ady != null) {
+            Nodo_Diccionario amigoDirecto = usuarios.obtenerNodo(ady.getIdDestino());
+            if (amigoDirecto != null) amigoDirecto.setVisitado(true);
+            ady = ady.getSiguiente();
+        }
+
+        System.out.println("Sugerencias para " + origen.getValor().getNombre() + ":");
+        boolean haySugerencias = false;
+
+        ady = origen.getAdyacentes();
+        while (ady != null) {
+            Nodo_Diccionario amigoDirecto = usuarios.obtenerNodo(ady.getIdDestino());
+            if (amigoDirecto != null) {
+                Nodo_Adyacente ady2 = amigoDirecto.getAdyacentes();
+                while (ady2 != null) {
+                    Nodo_Diccionario sugerencia = usuarios.obtenerNodo(ady2.getIdDestino());
+                    if (sugerencia != null && !sugerencia.isVisitado()) {
+                        System.out.println(" -> " + sugerencia.getValor().getNombre());
+                        sugerencia.setVisitado(true);
+                        haySugerencias = true;
+                    }
+                    ady2 = ady2.getSiguiente();
+                }
+            }
+            ady = ady.getSiguiente();
+        }
+        if (!haySugerencias) System.out.println(" No hay sugerencias por ahora.");
+    }
+
+    public void mostrarContactos(String email) {
+
+        Nodo_Diccionario usuario = usuarios.obtenerNodo(email);
+
+        if (usuario == null) {
             return;
         }
 
-        limpiarVisitados();
-        u.visitado = true; 
+        Nodo_Adyacente ady = usuario.getAdyacentes();
 
-        NodoAdyacente<T> ady = u.adyacentes;
+        System.out.println("\nMIS CONTACTOS:");
+
         while (ady != null) {
-            NodoVertice<T> aux = buscarNodo(ady.dato);
-            if (aux != null) {
-                aux.visitado = true;
-            }
-            ady = ady.siguiente;
-        }
 
-        NodoAdyacente<T> ady2 = u.adyacentes;
-        boolean hay = false;
-        System.out.println("Sugerencias de conexion:");
-        
-        while (ady2 != null) {
-            NodoVertice<T> aux2 = buscarNodo(ady2.dato);
-            if (aux2 != null) {
-                NodoAdyacente<T> ady3 = aux2.adyacentes;
-                while (ady3 != null) {
-                    NodoVertice<T> sug = buscarNodo(ady3.dato);
-                    if (sug != null && sug.visitado == false) {
-                        System.out.println("- " + sug.dato);
-                        sug.visitado = true; 
-                        hay = true;
-                    }
-                    ady3 = ady3.siguiente;
-                }
-            }
-            ady2 = ady2.siguiente;
-        }
+            Nodo_Diccionario contacto =
+                    usuarios.obtenerNodo(ady.getIdDestino());
 
-        if (hay == false) {
-            System.out.println("no hay sugerencias por ahora");
+            if (contacto != null) {
+                System.out.println("- " +
+                        contacto.getValor().getNombre());
+            }
+
+            ady = ady.getSiguiente();
         }
+    }
+
+    private class NodoCola {
+        Nodo_Diccionario nodo;
+        int distancia;
+        NodoCola siguiente;
+        public NodoCola(Nodo_Diccionario n, int d) { this.nodo = n; this.distancia = d; }
+    }
+
+    private class ColaPropia {
+        NodoCola frente, fin;
+        public void encolar(Nodo_Diccionario n, int dist) {
+            NodoCola nuevo = new NodoCola(n, dist);
+            if (frente == null) frente = fin = nuevo;
+            else { fin.siguiente = nuevo; fin = nuevo; }
+        }
+        public NodoCola desencolar() {
+            if (frente == null) return null;
+            NodoCola aux = frente;
+            frente = frente.siguiente;
+            if (frente == null) fin = null;
+            return aux;
+        }
+        public boolean estaVacia() { return frente == null; }
     }
 }

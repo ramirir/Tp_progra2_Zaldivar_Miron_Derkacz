@@ -1,6 +1,7 @@
 package Diccionario;
 
-import clases.Clase_Perfil; // No olvides importar Perfil si está en otro paquete
+import clases.Clase_Perfil;
+import clases.Nodo_Diccionario;
 
 public interface Idiccionario {
 
@@ -9,4 +10,8 @@ public interface Idiccionario {
     void eliminar(String clave);
 
     Clase_Perfil recuperar(String clave);
+
+    Nodo_Diccionario obtenerNodo(String clave);
+
+    void limpiarVisitados();
 }

@@ -93,4 +93,26 @@ public class Diccionario implements Idiccionario {
         return null; // Si no existe
     }
 
+    public Nodo_Diccionario obtenerNodo(String clave) {
+        Nodo_Diccionario actual = origen;
+        while (actual != null) {
+            if (clave.equals(actual.getClave())) {
+                return actual;
+            }
+            if (clave.compareTo(actual.getClave()) < 0) {
+                break;
+            }
+            actual = actual.getSiguiente();
+        }
+        return null;
+    }
+
+    public void limpiarVisitados() {
+        Nodo_Diccionario actual = origen;
+        while (actual != null) {
+            actual.setVisitado(false);
+            actual = actual.getSiguiente();
+        }
+    }
+
 }
