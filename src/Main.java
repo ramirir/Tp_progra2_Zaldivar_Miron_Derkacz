@@ -4,8 +4,8 @@ import clases.Clase_Perfil;
 import Cola.Cola;
 import clases.Postulacion;
 import Grafo.GrafoLista;
-import Arbol_binario.ArbolHabilidades;
-import Arbol_binario.Lista;
+import arbol.ArbolHabilidades;
+import arbol.Lista;
 
 public class Main {
     public static void main(String[] args) {
