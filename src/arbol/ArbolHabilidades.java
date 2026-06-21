@@ -1,4 +1,4 @@
-package Arbol_Binario;
+package arbol;
 
 public class ArbolHabilidades {
 
@@ -10,23 +10,23 @@ public class ArbolHabilidades {
 
     public void agregarRaiz(String habilidad) {
         if (raiz != null) {
-            System.out.println("El árbol ya tiene raíz: " + raiz.habilidad);
+            System.out.println("El Ã¡rbol ya tiene raÃ­z: " + raiz.habilidad);
             return;
         }
         raiz = new NodoArbol(habilidad);
-        System.out.println("Raíz creada: " + habilidad);
+        System.out.println("RaÃ­z creada: " + habilidad);
     }
 
     public void agregarHabilidad(String nombrePadre, String nuevaHabilidad) {
         NodoArbol padre = buscarNodo(raiz, nombrePadre);
 
         if (padre == null) {
-            System.out.println("No se encontró la habilidad padre: " + nombrePadre);
+            System.out.println("No se encontrÃ³ la habilidad padre: " + nombrePadre);
             return;
         }
 
         if (buscarNodo(raiz, nuevaHabilidad) != null) {
-            System.out.println("La habilidad '" + nuevaHabilidad + "' ya existe en el árbol.");
+            System.out.println("La habilidad '" + nuevaHabilidad + "' ya existe en el Ã¡rbol.");
             return;
         }
 
@@ -44,7 +44,7 @@ public class ArbolHabilidades {
         }
 
         if (nodo.profesionales.contains(idProfesional)) {
-            System.out.println("El profesional " + idProfesional + " ya está asociado a '" + habilidad + "'.");
+            System.out.println("El profesional " + idProfesional + " ya estÃ¡ asociado a '" + habilidad + "'.");
             return;
         }
 
@@ -92,16 +92,19 @@ public class ArbolHabilidades {
         return buscarNodo(raiz, habilidad) != null;
     }
 
+    public Lista<String> buscarProfesionalesPorHabilidad(String habilidad) {
         NodoArbol nodo = buscarNodo(raiz, habilidad);
 
         if (nodo == null) {
             System.out.println("Habilidad no encontrada: " + habilidad);
+            return new Lista<>();
         }
 
+        Lista<String> resultado = new Lista<>();
         recolectarProfesionales(nodo, resultado);
 
         if (resultado.isEmpty()) {
-            System.out.println("No hay profesionales asociados a '" + habilidad + "' ni sus subcategorías.");
+            System.out.println("No hay profesionales asociados a '" + habilidad + "' ni sus subcategorÃ­as.");
         } else {
             System.out.println("Profesionales encontrados bajo '" + habilidad + "': " + resultado);
         }
@@ -109,6 +112,7 @@ public class ArbolHabilidades {
         return resultado;
     }
 
+    private void recolectarProfesionales(NodoArbol nodo, Lista<String> acumulador) {
         if (nodo == null) {
             return;
         }
@@ -166,12 +170,13 @@ public class ArbolHabilidades {
 
     public void mostrarPorNiveles() {
         if (raiz == null) {
-            System.out.println("El árbol está vacío.");
+            System.out.println("El Ã¡rbol estÃ¡ vacÃ­o.");
             return;
         }
 
         System.out.println("Recorrido por niveles (BFS):");
 
+        Lista<NodoArbol> cola = new Lista<>();
         cola.add(raiz);
 
         int nivel = 0;
@@ -235,6 +240,7 @@ public class ArbolHabilidades {
     }
 
     public void mostrarCamino(String habilidad) {
+        Lista<String> camino = new Lista<>();
         boolean encontrado = buscarCamino(raiz, habilidad, camino);
 
         if (!encontrado) {
@@ -252,6 +258,7 @@ public class ArbolHabilidades {
         System.out.println();
     }
 
+    private boolean buscarCamino(NodoArbol actual, String habilidad, Lista<String> camino) {
         if (actual == null) {
             return false;
         }
