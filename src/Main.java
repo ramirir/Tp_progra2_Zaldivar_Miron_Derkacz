@@ -299,6 +299,10 @@ public class Main {
             if (seleccion == 1) colaElegida = colaJava;
             else if (seleccion == 2) colaElegida = colaSistemas;
             else if (seleccion == 3) colaElegida = colaLinux;
+             else {
+                System.out.println("  Opción inválida. Volviendo al menú ");
+                return;
+            }
             if (!colaElegida.esta_vacia()) {
                 // 1. Capturamos la postulación del frente
                 Postulacion solicitudActual = colaElegida.ver_primero();
