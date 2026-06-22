@@ -2,7 +2,7 @@ package Grafo;
 
 import Diccionario.Diccionario;
 import clases.Nodo_Diccionario;
-
+import arbol.Lista;
 public class GrafoLista {
     private Diccionario usuarios;
 
@@ -102,6 +102,69 @@ public class GrafoLista {
             ady = ady.getSiguiente();
         }
         if (!haySugerencias) System.out.println(" No hay sugerencias por ahora.");
+    }
+
+    public Lista<String> obtenerSugerencias(String email) {
+
+        Lista<String> lista = new Lista<>();
+
+        Nodo_Diccionario origen = usuarios.obtenerNodo(email);
+
+        if (origen == null) {
+            return lista;
+        }
+
+        usuarios.limpiarVisitados();
+        origen.setVisitado(true);
+
+        Nodo_Adyacente ady = origen.getAdyacentes();
+
+        while (ady != null) {
+            Nodo_Diccionario amigoDirecto =
+                    usuarios.obtenerNodo(ady.getIdDestino());
+
+            if (amigoDirecto != null) {
+                amigoDirecto.setVisitado(true);
+            }
+
+            ady = ady.getSiguiente();
+        }
+
+        ady = origen.getAdyacentes();
+
+        while (ady != null) {
+
+            Nodo_Diccionario amigoDirecto =
+                    usuarios.obtenerNodo(ady.getIdDestino());
+
+            if (amigoDirecto != null) {
+
+                Nodo_Adyacente ady2 =
+                        amigoDirecto.getAdyacentes();
+
+                while (ady2 != null) {
+
+                    Nodo_Diccionario sugerencia =
+                            usuarios.obtenerNodo(ady2.getIdDestino());
+
+                    if (sugerencia != null &&
+                            !sugerencia.isVisitado()) {
+
+                        lista.add(
+                                sugerencia.getClave()
+                        );
+
+                        sugerencia.setVisitado(true);
+                    }
+
+                    ady2 = ady2.getSiguiente();
+                }
+            }
+
+            ady = ady.getSiguiente();
+        }
+
+        return lista;
     }
 
     public void mostrarContactos(String email) {
