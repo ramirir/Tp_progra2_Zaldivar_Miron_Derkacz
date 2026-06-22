@@ -1,6 +1,6 @@
 package arbol;
 
-public class ArbolHabilidades {
+public class ArbolHabilidades implements IArbolHabilidades {
 
     private NodoArbol raiz;
 
@@ -8,6 +8,7 @@ public class ArbolHabilidades {
         this.raiz = null;
     }
 
+    @Override
     public void agregarRaiz(String habilidad) {
         if (raiz != null) {
             System.out.println("El Ã¡rbol ya tiene raÃ­z: " + raiz.habilidad);
@@ -16,7 +17,7 @@ public class ArbolHabilidades {
         raiz = new NodoArbol(habilidad);
         System.out.println("RaÃ­z creada: " + habilidad);
     }
-
+    @Override
     public void agregarHabilidad(String nombrePadre, String nuevaHabilidad) {
         NodoArbol padre = buscarNodo(raiz, nombrePadre);
 
@@ -35,6 +36,7 @@ public class ArbolHabilidades {
         System.out.println("Habilidad '" + nuevaHabilidad + "' agregada bajo '" + nombrePadre + "'.");
     }
 
+    @Override
     public void asociarProfesional(String habilidad, String idProfesional) {
         NodoArbol nodo = buscarNodo(raiz, habilidad);
 
@@ -51,7 +53,7 @@ public class ArbolHabilidades {
         nodo.profesionales.add(idProfesional);
         System.out.println("Profesional " + idProfesional + " asociado a '" + habilidad + "'.");
     }
-
+    @Override
     public void desasociarProfesional(String habilidad, String idProfesional) {
         NodoArbol nodo = buscarNodo(raiz, habilidad);
 
@@ -88,10 +90,12 @@ public class ArbolHabilidades {
         return null;
     }
 
+    @Override
     public boolean existeHabilidad(String habilidad) {
         return buscarNodo(raiz, habilidad) != null;
     }
 
+    @Override
     public Lista<String> buscarProfesionalesPorHabilidad(String habilidad) {
         NodoArbol nodo = buscarNodo(raiz, habilidad);
 
@@ -128,7 +132,7 @@ public class ArbolHabilidades {
             }
         }
     }
-
+    @Override
     public void mostrarPreOrden() {
         System.out.print("PreOrden: ");
         preOrdenRecursivo(raiz, 0);
@@ -149,7 +153,7 @@ public class ArbolHabilidades {
             preOrdenRecursivo(nodo.hijos.get(i), nivel + 1);
         }
     }
-
+    @Override
     public void mostrarPostOrden() {
         System.out.print("PostOrden: ");
         postOrdenRecursivo(raiz);
@@ -167,7 +171,7 @@ public class ArbolHabilidades {
 
         System.out.print(nodo.habilidad + " ");
     }
-
+    @Override
     public void mostrarPorNiveles() {
         if (raiz == null) {
             System.out.println("El Ã¡rbol estÃ¡ vacÃ­o.");
@@ -198,7 +202,7 @@ public class ArbolHabilidades {
             nivel++;
         }
     }
-
+    @Override
     public int contarNodos() {
         return contarRecursivo(raiz);
     }
@@ -215,6 +219,7 @@ public class ArbolHabilidades {
         return total;
     }
 
+    @Override
     public int altura() {
         return alturaRecursiva(raiz);
     }
@@ -238,7 +243,7 @@ public class ArbolHabilidades {
 
         return 1 + maxHijo;
     }
-
+    @Override
     public void mostrarCamino(String habilidad) {
         Lista<String> camino = new Lista<>();
         boolean encontrado = buscarCamino(raiz, habilidad, camino);
@@ -278,7 +283,7 @@ public class ArbolHabilidades {
         camino.remove(camino.size() - 1);
         return false;
     }
-
+    @Override
     public void mostrarHojas() {
         System.out.print("Habilidades hoja: ");
         mostrarHojasRecursivo(raiz);
@@ -299,7 +304,7 @@ public class ArbolHabilidades {
             mostrarHojasRecursivo(nodo.hijos.get(i));
         }
     }
-
+    @Override
     public boolean esVacio() {
         return raiz == null;
     }
