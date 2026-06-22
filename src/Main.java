@@ -174,17 +174,16 @@ public class Main {
                 int puestoElegido = teclado.nextInt();
                 teclado.nextLine();
 
-                String nombrePuesto = "";
                 if (puestoElegido == 1) {
-                    Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), nombrePuesto);
+                    Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), "Desarrollador de Java Backend");
                     colaJava.encolar(nuevaSolicitud);
                     System.out.println(" ¡Postulación exitosa! Entraste a la cola de Desarrollador de Java.");
                 } else if (puestoElegido == 2) {
-                    Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), nombrePuesto);
+                    Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), "Analista de Sistemas / Funcional");
                     colaSistemas.encolar(nuevaSolicitud);
                     System.out.println(" ¡Postulación exitosa! Entraste a la cola de Analista de Sistemas.");
                 } else if (puestoElegido == 3) {
-                    Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), nombrePuesto);
+                    Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), "Administrador de Servidores Linux");
                     colaLinux.encolar(nuevaSolicitud);
                     System.out.println(" ¡Postulación exitosa! Entraste a la cola de Administrador de Servidores de Linux.");
                 } else {
