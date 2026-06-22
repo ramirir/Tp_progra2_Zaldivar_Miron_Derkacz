@@ -11,23 +11,23 @@ public class ArbolHabilidades implements IArbolHabilidades {
     @Override
     public void agregarRaiz(String habilidad) {
         if (raiz != null) {
-            System.out.println("El Ã¡rbol ya tiene raÃ­z: " + raiz.habilidad);
+            System.out.println("El árbol ya tiene raíz: " + raiz.habilidad);
             return;
         }
         raiz = new NodoArbol(habilidad);
-        System.out.println("RaÃ­z creada: " + habilidad);
+        System.out.println("Raíz creada: " + habilidad);
     }
     @Override
     public void agregarHabilidad(String nombrePadre, String nuevaHabilidad) {
         NodoArbol padre = buscarNodo(raiz, nombrePadre);
 
         if (padre == null) {
-            System.out.println("No se encontrÃ³ la habilidad padre: " + nombrePadre);
+            System.out.println("No se encontró la habilidad padre: " + nombrePadre);
             return;
         }
 
         if (buscarNodo(raiz, nuevaHabilidad) != null) {
-            System.out.println("La habilidad '" + nuevaHabilidad + "' ya existe en el Ã¡rbol.");
+            System.out.println("La habilidad '" + nuevaHabilidad + "' ya existe en el árbol.");
             return;
         }
 
@@ -46,7 +46,7 @@ public class ArbolHabilidades implements IArbolHabilidades {
         }
 
         if (nodo.profesionales.contains(idProfesional)) {
-            System.out.println("El profesional " + idProfesional + " ya estÃ¡ asociado a '" + habilidad + "'.");
+            System.out.println("El profesional " + idProfesional + " ya está asociado a '" + habilidad + "'.");
             return;
         }
 
@@ -108,7 +108,7 @@ public class ArbolHabilidades implements IArbolHabilidades {
         recolectarProfesionales(nodo, resultado);
 
         if (resultado.isEmpty()) {
-            System.out.println("No hay profesionales asociados a '" + habilidad + "' ni sus subcategorÃ­as.");
+            System.out.println("No hay profesionales asociados a '" + habilidad + "' ni sus subcategorías.");
         } else {
             System.out.println("Profesionales encontrados bajo '" + habilidad + "': " + resultado);
         }
@@ -174,7 +174,7 @@ public class ArbolHabilidades implements IArbolHabilidades {
     @Override
     public void mostrarPorNiveles() {
         if (raiz == null) {
-            System.out.println("El Ã¡rbol estÃ¡ vacÃ­o.");
+            System.out.println("El árbol está vacío.");
             return;
         }
 
