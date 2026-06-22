@@ -38,7 +38,7 @@ public class Main {
         //Usuarios ya encolados
 
         colaJava.encolar(new Postulacion(user1.getId(), "Desarrollador de Java Backend"));
-        colaSistemas.encolar(new Postulacion(user2.getId(), "Analista de Sistemas / Funcional"));
+        colaSistemas.encolar(new Postulacion(user2.getId(), "Analista de Sistemas "));
 
 
         int opcionPrincipal;
@@ -67,7 +67,7 @@ public class Main {
 
                 if (opcionAltas == 1) {
 
-                    System.out.println("Ingrese Email (ID único):");
+                    System.out.println("Ingrese Email :");
                     String id = teclado.nextLine();
 
                     System.out.println("Ingrese Nombre completo:");
@@ -100,6 +100,7 @@ public class Main {
 
                     System.out.println("-> ¡Usuario registrado con éxito!");
 
+
                 } else if (opcionAltas == 2) {        // Se piden datos de ingreso al usuario
                     System.out.println("Ingrese su Email para ingresar:");
                     String loginId = teclado.nextLine();
@@ -112,11 +113,15 @@ public class Main {
                         System.out.println("-> Error: El email no coincide con ningún usuario registrado.");
                     }
                 }
-            } else if (opcionPrincipal == 2) {      // Llamamos a la funcion de bajas
+            } else if (opcionPrincipal == 2) {// Llamamos a la funcion de bajas
+
                 menuBajas(plataforma, teclado);
+
             } else if (opcionPrincipal == 3) {
+
                 menuConsultas(plataforma, colaJava, colaSistemas, colaLinux, arbolHabilidades, teclado);
             }
+
         } while (opcionPrincipal != 4);
 
         teclado.close();
@@ -199,7 +204,7 @@ public class Main {
             } else if (opcionUsuario == 5) {
                 redContactos.mostrarContactos(usuario.getId());
             } else if (opcionUsuario == 6) {
-                mostrarContactosRecomendados(usuario, redContactos, teclado);
+                mostrarContactosRecomendados(usuario,plataforma, redContactos, teclado);
             } else if (opcionUsuario == 7) {
                 calcularGradoSeparacion(usuario, redContactos, teclado);
             } else if (opcionUsuario == 8) {
@@ -353,12 +358,60 @@ public class Main {
     }
 
 
-    public static void mostrarContactosRecomendados(Clase_Perfil usuario, GrafoLista redContactos, Scanner teclado) {
+    public static void mostrarContactosRecomendados(Clase_Perfil usuario,Diccionario plataforma,  GrafoLista redContactos, Scanner teclado) {
 
         System.out.println("\n    [ CONTACTOS RECOMENDADOS ]");
 
-        redContactos.sugerirContactos(usuario.getId());
+        Lista<String> sugerencias =
+                redContactos.obtenerSugerencias(usuario.getId());
+
+        if (sugerencias.isEmpty()) {
+            System.out.println("No hay sugerencias.");
+            return;
+        }
+
+        for (int i = 0; i < sugerencias.size(); i++) {
+
+            Clase_Perfil perfil =
+                    plataforma.recuperar(sugerencias.get(i));
+
+            if (perfil != null) {
+                System.out.println(
+                        (i + 1) + " - " +
+                                perfil.getNombre()
+                );
+            }
+        }
+
+        System.out.print("\n¿Desea agregar alguno? (S/N): ");
+        String respuesta = teclado.nextLine();
+
+        if (respuesta.equalsIgnoreCase("S")) {
+
+            System.out.print("Seleccione una opción: ");
+            int opcion = teclado.nextInt();
+            teclado.nextLine();
+
+            if (opcion >= 1 && opcion <= sugerencias.size()) {
+
+                String emailElegido =
+                        sugerencias.get(opcion - 1);
+
+                redContactos.conectar(
+                        usuario.getId(),
+                        emailElegido
+                );
+
+                System.out.println(
+                        "Contacto agregado correctamente."
+                );
+
+            } else {
+                System.out.println("Opción inválida.");
+            }
+        }
     }
+
 
     public static void calcularGradoSeparacion(Clase_Perfil usuario, GrafoLista redContactos, Scanner teclado) {
         System.out.println("\n    [ GRADO DE SEPARACIÓN ]");
@@ -396,5 +449,6 @@ public class Main {
 
         return arbol;
     }
-
 }
+
+
