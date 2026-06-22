@@ -3,14 +3,17 @@ package Grafo;
 import Diccionario.Diccionario;
 import clases.Nodo_Diccionario;
 import arbol.Lista;
-public class GrafoLista {
+
+public class GrafoLista implements IGrafoLista {
+
     private Diccionario usuarios;
 
     public GrafoLista(Diccionario usuarios) {
         this.usuarios = usuarios;
     }
 
-    public void conectar(String email1, String email2) {         //Crea vinculo entre personas
+    @Override
+    public void conectar(String email1, String email2) {
         Nodo_Diccionario n1 = usuarios.obtenerNodo(email1);
         Nodo_Diccionario n2 = usuarios.obtenerNodo(email2);
 
@@ -22,52 +25,63 @@ public class GrafoLista {
 
     private void agregarAdyacente(Nodo_Diccionario origen, String idDestino) {
         Nodo_Adyacente nuevo = new Nodo_Adyacente(idDestino);
+
         if (origen.getAdyacentes() == null) {
             origen.setAdyacentes(nuevo);
         } else {
             Nodo_Adyacente actual = origen.getAdyacentes();
+
             while (actual.getSiguiente() != null) {
-                if (actual.getIdDestino().equals(idDestino)) return;    //Evita duplicados
+                if (actual.getIdDestino().equals(idDestino)) return;
                 actual = actual.getSiguiente();
             }
+
             if (!actual.getIdDestino().equals(idDestino)) {
                 actual.setSiguiente(nuevo);
             }
         }
     }
 
+    @Override
     public int calcularGradoSeparacion(String origen, String destino) {
         if (origen.equals(destino)) return 0;
+
         usuarios.limpiarVisitados();
 
         Nodo_Diccionario nodoOrigen = usuarios.obtenerNodo(origen);
         if (nodoOrigen == null) return -1;
 
-        ColaPropia cola = new ColaPropia(); // <--- Usando tu nombre
+        ColaPropia cola = new ColaPropia();
         nodoOrigen.setVisitado(true);
         cola.encolar(nodoOrigen, 0);
 
         while (!cola.estaVacia()) {
-            NodoCola actual = cola.desencolar(); // <--- Usando tu nombre
+            NodoCola actual = cola.desencolar();
 
             if (actual.nodo.getClave().equals(destino)) {
                 return actual.distancia;
             }
 
             Nodo_Adyacente ady = actual.nodo.getAdyacentes();
+
             while (ady != null) {
                 Nodo_Diccionario vecino = usuarios.obtenerNodo(ady.getIdDestino());
+
                 if (vecino != null && !vecino.isVisitado()) {
                     vecino.setVisitado(true);
                     cola.encolar(vecino, actual.distancia + 1);
                 }
+
                 ady = ady.getSiguiente();
             }
         }
+
         return -1;
     }
 
+    @Override
     public void sugerirContactos(String email) {
+
         Nodo_Diccionario origen = usuarios.obtenerNodo(email);
         if (origen == null) return;
 
@@ -75,44 +89,56 @@ public class GrafoLista {
         origen.setVisitado(true);
 
         Nodo_Adyacente ady = origen.getAdyacentes();
+
         while (ady != null) {
-            Nodo_Diccionario amigoDirecto = usuarios.obtenerNodo(ady.getIdDestino());
-            if (amigoDirecto != null) amigoDirecto.setVisitado(true);
+            Nodo_Diccionario amigo = usuarios.obtenerNodo(ady.getIdDestino());
+            if (amigo != null) amigo.setVisitado(true);
             ady = ady.getSiguiente();
         }
 
         System.out.println("Sugerencias para " + origen.getValor().getNombre() + ":");
-        boolean haySugerencias = false;
+
+        boolean hay = false;
 
         ady = origen.getAdyacentes();
+
         while (ady != null) {
-            Nodo_Diccionario amigoDirecto = usuarios.obtenerNodo(ady.getIdDestino());
-            if (amigoDirecto != null) {
-                Nodo_Adyacente ady2 = amigoDirecto.getAdyacentes();
+
+            Nodo_Diccionario amigo = usuarios.obtenerNodo(ady.getIdDestino());
+
+            if (amigo != null) {
+
+                Nodo_Adyacente ady2 = amigo.getAdyacentes();
+
                 while (ady2 != null) {
-                    Nodo_Diccionario sugerencia = usuarios.obtenerNodo(ady2.getIdDestino());
+
+                    Nodo_Diccionario sugerencia =
+                            usuarios.obtenerNodo(ady2.getIdDestino());
+
                     if (sugerencia != null && !sugerencia.isVisitado()) {
                         System.out.println(" -> " + sugerencia.getValor().getNombre());
                         sugerencia.setVisitado(true);
-                        haySugerencias = true;
+                        hay = true;
                     }
+
                     ady2 = ady2.getSiguiente();
                 }
             }
+
             ady = ady.getSiguiente();
         }
-        if (!haySugerencias) System.out.println(" No hay sugerencias por ahora.");
+
+        if (!hay) System.out.println("No hay sugerencias.");
     }
 
+    @Override
     public Lista<String> obtenerSugerencias(String email) {
 
         Lista<String> lista = new Lista<>();
 
         Nodo_Diccionario origen = usuarios.obtenerNodo(email);
 
-        if (origen == null) {
-            return lista;
-        }
+        if (origen == null) return lista;
 
         usuarios.limpiarVisitados();
         origen.setVisitado(true);
@@ -120,13 +146,8 @@ public class GrafoLista {
         Nodo_Adyacente ady = origen.getAdyacentes();
 
         while (ady != null) {
-            Nodo_Diccionario amigoDirecto =
-                    usuarios.obtenerNodo(ady.getIdDestino());
-
-            if (amigoDirecto != null) {
-                amigoDirecto.setVisitado(true);
-            }
-
+            Nodo_Diccionario amigo = usuarios.obtenerNodo(ady.getIdDestino());
+            if (amigo != null) amigo.setVisitado(true);
             ady = ady.getSiguiente();
         }
 
@@ -134,26 +155,19 @@ public class GrafoLista {
 
         while (ady != null) {
 
-            Nodo_Diccionario amigoDirecto =
-                    usuarios.obtenerNodo(ady.getIdDestino());
+            Nodo_Diccionario amigo = usuarios.obtenerNodo(ady.getIdDestino());
 
-            if (amigoDirecto != null) {
+            if (amigo != null) {
 
-                Nodo_Adyacente ady2 =
-                        amigoDirecto.getAdyacentes();
+                Nodo_Adyacente ady2 = amigo.getAdyacentes();
 
                 while (ady2 != null) {
 
                     Nodo_Diccionario sugerencia =
                             usuarios.obtenerNodo(ady2.getIdDestino());
 
-                    if (sugerencia != null &&
-                            !sugerencia.isVisitado()) {
-
-                        lista.add(
-                                sugerencia.getClave()
-                        );
-
+                    if (sugerencia != null && !sugerencia.isVisitado()) {
+                        lista.add(sugerencia.getClave());
                         sugerencia.setVisitado(true);
                     }
 
@@ -167,13 +181,12 @@ public class GrafoLista {
         return lista;
     }
 
+    @Override
     public void mostrarContactos(String email) {
 
         Nodo_Diccionario usuario = usuarios.obtenerNodo(email);
 
-        if (usuario == null) {
-            return;
-        }
+        if (usuario == null) return;
 
         Nodo_Adyacente ady = usuario.getAdyacentes();
 
@@ -185,28 +198,42 @@ public class GrafoLista {
                     usuarios.obtenerNodo(ady.getIdDestino());
 
             if (contacto != null) {
-                System.out.println("- " +
-                        contacto.getValor().getNombre());
+                System.out.println("- " + contacto.getValor().getNombre());
             }
 
             ady = ady.getSiguiente();
         }
     }
 
+    // =====================
+    // Cola interna BFS
+    // =====================
+
     private class NodoCola {
         Nodo_Diccionario nodo;
         int distancia;
         NodoCola siguiente;
-        public NodoCola(Nodo_Diccionario n, int d) { this.nodo = n; this.distancia = d; }
+
+        public NodoCola(Nodo_Diccionario n, int d) {
+            this.nodo = n;
+            this.distancia = d;
+        }
     }
 
     private class ColaPropia {
+
         NodoCola frente, fin;
+
         public void encolar(Nodo_Diccionario n, int dist) {
             NodoCola nuevo = new NodoCola(n, dist);
-            if (frente == null) frente = fin = nuevo;
-            else { fin.siguiente = nuevo; fin = nuevo; }
+            if (frente == null) {
+                frente = fin = nuevo;
+            } else {
+                fin.siguiente = nuevo;
+                fin = nuevo;
+            }
         }
+
         public NodoCola desencolar() {
             if (frente == null) return null;
             NodoCola aux = frente;
@@ -214,6 +241,9 @@ public class GrafoLista {
             if (frente == null) fin = null;
             return aux;
         }
-        public boolean estaVacia() { return frente == null; }
+
+        public boolean estaVacia() {
+            return frente == null;
+        }
     }
 }
