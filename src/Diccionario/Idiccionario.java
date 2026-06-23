@@ -14,4 +14,5 @@ public interface Idiccionario {
     Nodo_Diccionario obtenerNodo(String clave);
 
     void limpiarVisitados();
+
 }

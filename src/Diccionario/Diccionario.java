@@ -5,11 +5,12 @@ import clases.Clase_Perfil;
 public class Diccionario implements Idiccionario {
     private Nodo_Diccionario origen; // El primer nodo de la lista
 
+
     public Diccionario() {
         this.origen = null;
     }
 
-
+    @Override
     public void insertar(String clave, Clase_Perfil valor) {
         Nodo_Diccionario nuevo = new Nodo_Diccionario(clave, valor);
 
@@ -46,7 +47,7 @@ public class Diccionario implements Idiccionario {
         }
     }
 
-
+    @Override
     public void eliminar(String clave) {
         // Si la lista está vacía, no hay nada que borrar
         if (origen == null) {
@@ -74,6 +75,7 @@ public class Diccionario implements Idiccionario {
         }
     }
 
+    @Override
     public Clase_Perfil recuperar(String clave) {
         Nodo_Diccionario actual = origen;
 
@@ -93,6 +95,7 @@ public class Diccionario implements Idiccionario {
         return null; // Si no existe
     }
 
+    @Override
     public Nodo_Diccionario obtenerNodo(String clave) {
         Nodo_Diccionario actual = origen;
         while (actual != null) {
@@ -107,6 +110,7 @@ public class Diccionario implements Idiccionario {
         return null;
     }
 
+    @Override
     public void limpiarVisitados() {
         Nodo_Diccionario actual = origen;
         while (actual != null) {
