@@ -53,7 +53,7 @@ public class Main {
             System.out.println("4- Salir");
             System.out.println("-------------------------------------------------");
             System.out.print("Elija una opción del menú principal: ");
-            opcionPrincipal = teclado.nextInt();
+            opcionPrincipal = leerEntero(teclado);;
             teclado.nextLine();
 
             if (opcionPrincipal == 1) {
@@ -62,13 +62,24 @@ public class Main {
                 System.out.println(" 1- Registrar usuario");
                 System.out.println(" 2- Iniciar sesion de usuario");
                 System.out.print("Seleccione una opcion (1 o 2): ");
-                opcionAltas = teclado.nextInt();
+                opcionAltas = leerEntero(teclado);
                 teclado.nextLine();
 
                 if (opcionAltas == 1) {
 
                     System.out.println("Ingrese Email :");
                     String id = teclado.nextLine();
+
+                    if (!esEmailValido(id)) {
+                        System.out.println("Email inválido.");
+                        continue;
+                    }
+
+
+                    if (plataforma.recuperar(id) != null) {
+                        System.out.println("Ese email ya se encuentra registrado.");
+                        continue;
+                    }
 
                     System.out.println("Ingrese Nombre completo:");
                     String nombre = teclado.nextLine();
@@ -82,22 +93,21 @@ public class Main {
                     System.out.println("\nSeleccione una habilidad:");
 
                     arbolHabilidades.mostrarPreOrden();
+                    String habilidad;
 
-                    System.out.print("Habilidad: ");
-                    String habilidad = teclado.nextLine();
+                    do {
+                        System.out.print("Habilidad: ");
+                        habilidad = teclado.nextLine();
 
-                    if (arbolHabilidades.existeHabilidad(habilidad)) {
+                        if (!arbolHabilidades.existeHabilidad(habilidad)) {
+                            System.out.println("La habilidad no existe. Intente nuevamente.");
+                        }
 
-                        arbolHabilidades.asociarProfesional(
-                                habilidad,
-                                nuevo.getId()
-                        );
+                    } while (!arbolHabilidades.existeHabilidad(habilidad));
 
-                        System.out.println("Habilidad asociada correctamente.");
-                    } else {
-                        System.out.println("La habilidad no existe.");
-                    }
+                    arbolHabilidades.asociarProfesional(habilidad, nuevo.getId());
 
+                    System.out.println("Habilidad asociada correctamente.");
                     System.out.println("-> ¡Usuario registrado con éxito!");
 
 
@@ -140,14 +150,14 @@ public class Main {
             System.out.println("    1- Ver mis Datos del Perfil");
             System.out.println("    2- Modificar Carrera / Profesión");
             System.out.println("    3- Postularse a una Oferta de Empleo");
-            System.out.println("    4- Deshacer última modificación (Pila)");
+            System.out.println("    4- Deshacer última modificación del perfil (Pila)");
             System.out.println("    5- Ver mis contactos");
             System.out.println("    6- Ver contactos recomendados");
             System.out.println("    7- Calcular grado separacion");
             System.out.println("    8- Asociar habilidad");
             System.out.println("    9- Cerrar Sesión");
             System.out.print("    Elija una opción de su cuenta: ");
-            opcionUsuario = teclado.nextInt();
+            opcionUsuario = leerEntero(teclado);
             teclado.nextLine();
 
             if (opcionUsuario == 1) {
@@ -162,7 +172,7 @@ public class Main {
                 String nuevaProf = teclado.nextLine();
 
                 usuario.actualizarProfesion(nuevaProf);
-                System.out.println("    Carrera actualizada. Cambio guardado en tu Pila.");
+                System.out.println("    Carrera actualizada. Cambio guardado.");
 
             } else if (opcionUsuario == 3) {
                 System.out.println("\n    [ OFERTAS DE TRABAJO DISPONIBLES ]");
@@ -171,17 +181,19 @@ public class Main {
                 System.out.println("    3- Administrador de Servidores Linux");
                 System.out.print("    Seleccione el puesto al que desea aplicar (1-3): ");
 
-                int puestoElegido = teclado.nextInt();
+                int puestoElegido = leerEntero(teclado);
                 teclado.nextLine();
 
                 if (puestoElegido == 1) {
                     Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), "Desarrollador de Java Backend");
                     colaJava.encolar(nuevaSolicitud);
                     System.out.println(" ¡Postulación exitosa! Entraste a la cola de Desarrollador de Java.");
+
                 } else if (puestoElegido == 2) {
                     Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), "Analista de Sistemas / Funcional");
                     colaSistemas.encolar(nuevaSolicitud);
                     System.out.println(" ¡Postulación exitosa! Entraste a la cola de Analista de Sistemas.");
+
                 } else if (puestoElegido == 3) {
                     Postulacion nuevaSolicitud = new Postulacion(usuario.getId(), "Administrador de Servidores Linux");
                     colaLinux.encolar(nuevaSolicitud);
@@ -423,11 +435,11 @@ public class Main {
 
         int grado = redContactos.calcularGradoSeparacion(usuario.getId(), emailDestino);
         if (grado == -1) {
-            System.out.println("    No existe un camino o vínculo que te conecte con ese usuario.");
+            System.out.println("  No existe un camino o vínculo que te conecte con ese usuario.");
         } else if (grado == 0) {
-            System.out.println("    Ese eres tú mismo.");
+            System.out.println(" Ese eres tu mismo.");
         } else {
-            System.out.println("    Grado de separación: " + grado + " saltos.");
+            System.out.println("  Grado de separación: " + grado + " saltos.");
         }
     }
 
@@ -451,6 +463,22 @@ public class Main {
         arbol.agregarHabilidad("Infraestructura", "Servidores");
 
         return arbol;
+    }
+
+    public static boolean esEmailValido(String email) {
+
+        return email.contains("@") && email.contains(".");
+    }
+
+    public static int leerEntero(Scanner teclado) {
+
+        while (!teclado.hasNextInt()) {
+            System.out.println("Debe ingresar un número.");
+            teclado.nextLine();
+        }
+
+        int numero = teclado.nextInt();
+        return numero;
     }
 }
 
